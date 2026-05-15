@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Cluster App</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: #1e293b;
+            font-size: 24px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: none;
+            background: #0f172a;
+            color: white;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            background: #22c55e;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 15px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+
+        td, th {
+            border-bottom: 1px solid #444;
+            padding: 8px;
+            text-align: center;
+        }
+
+        img {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>📊 Кластеризация (X и Y)</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Введите данные</h2>
+
+        <form id="form">
+
+            <label>X</label>
+            <input type="number" step="any" name="X" placeholder="например: 5.2" required>
+
+            <label>Y</label>
+            <input type="number" step="any" name="Y" placeholder="например: 3.8" required>
+
+            <button type="submit">Определить кластер</button>
+        </form>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <div class="card">
+        <h2>Примеры данных</h2>
+
+        <table>
+            <tr>
+                <th>X</th>
+                <th>Y</th>
+                <th>Cluster</th>
+            </tr>
+
+            {% for row in sample_data %}
+            <tr>
+                <td>{{ row.X }}</td>
+                <td>{{ row.Y }}</td>
+                <td>{{ row.Cluster }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>График</h2>
+        <img src="/static/cluster_plot.png">
+    </div>
+
+</div>
+
+<script>
+document.getElementById("form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch("/predict", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("result").innerText =
+                "Кластер: " + data.cluster;
+        } else {
+            document.getElementById("result").innerText =
+                "Ошибка ввода";
+        }
+    });
+});
+</script>
+
+</body>
+</html>
